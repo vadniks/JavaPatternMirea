@@ -30,23 +30,6 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Function;
 
-/*
-sudo mkdir /run/postgresql
-sudo chown postgres /run/postgresql
-sudo chgrp postgres /run/postgresql
-sudo su - postgres
-    pg_ctl -D /var/lib/postgres/data start
-    createdb db
-    psql -d db
-psql -h localhost -p 5432 -U postgres -d db
-    pg_ctl -D /var/lib/postgres/data stop
-
-# Hibernate: create sequence hibernate_sequence start 1 increment 1
-# Hibernate: create table dgs (id int4 not null, bd varchar(255), nm varchar(255), rs_id int4, primary key (id))
-# Hibernate: create table urs (id int4 not null, fn varchar(255), ln varchar(255), primary key (id))
-# Hibernate: alter table if exists dgs add constraint FK1n8n2m20onaxgxi49a460eb6e foreign key (rs_id) references urs
-# Hibernate: select tsk15_usr0_.id as id1_2_0_, tsk15_usr0_.fn as fn2_2_0_, tsk15_usr0_.ln as ln3_2_0_ from usrs tsk15_usr0_ where tsk15_usr0_.id=?
-*/
 @SpringBootApplication
 public class tsk17 {
     private static final String db = "db";
