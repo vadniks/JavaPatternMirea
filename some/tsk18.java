@@ -2,13 +2,13 @@ package a;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import lombok.val;
+import lombok.*;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +17,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -29,15 +30,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
-/**
- ______  ____    ___   ____ 
-/_  __/ / __ \  / _ \ / __ \
- / /   / /_/ / / // // /_/ /
-/_/    \____/ /____/ \____/ 
-                            
- Add endpoints!
- */
-
 /*
 sudo mkdir /run/postgresql
 sudo chgrp postgres /run/postgresql
@@ -48,6 +40,8 @@ sudo su - postgres
         select * from urs;
         select * from dgs;
     pg_ctl -D /var/lib/postgres/data stop
+
+management.endpoints.web.exposure.include=usr,dg
 */
 @SpringBootApplication
 public class tsk18 {
@@ -97,8 +91,8 @@ public class tsk18 {
     ////////////////////////////////////////////////////////////////////// service
 
     private interface $$<T extends _$, R extends $$$$<T>>
-    { List<T> gal(); void dd(T a);
-      void dl(int a); @TestOnly void $(); }
+    { List<T> gal(); void dd(T a); void dl(int a);
+        @TestOnly void nw(); @TestOnly String gt(); }
 
     public interface uss extends $$<usr, usp> {}
     public interface dgs extends $$<dg, dgp> {}
@@ -106,29 +100,40 @@ public class tsk18 {
     @RequiredArgsConstructor
     private abstract static class
     $$$<T extends _$, R extends $$$$<T>> implements $$<T, R> {
-
         private final R rp;
+
         @Override public List<T> gal() { return rp.findAll(); }
         @Override public void dd(T a) { rp.save(a); }
         @Override public void dl(int a) { rp.deleteById(a); }
 
         @SuppressWarnings("unchecked")
         @TestOnly @Override
-        public void $() {
-            dd((T) (
-                rp instanceof usp ?
-                    new usr("fn", "ln") :
-                    new dg("nm", "bd"))
-            );
-            System.out.println(gal());
-        }
+        public void nw() { dd((T) (
+            rp instanceof usp ?
+                new usr("fn", "ln") :
+                new dg("nm", "bd"))); }
+
+        @TestOnly @Override
+        public String gt() { return gal().toString(); }
     }
 
-    @Service public static class ussi extends $$$<usr, usp> implements uss
-    { public ussi(usp a) { super(a); $(); } }
+    // GET curl http://localhost:8080/actuator/usr
+    @Component @Endpoint(id = "usr") @Service
+    public static class ussi extends $$$<usr, usp> implements uss {
+        public ussi(usp a) { super(a); }
 
-    @Service public static class dgsi extends $$$<dg, dgp> implements dgs
-    { public dgsi(dgp a) { super(a); $(); } }
+        @SuppressWarnings("unused") @ReadOperation
+        public String a() { return gt(); }
+    }
+
+    // GET curl http://localhost:8080/actuator/dg
+    @Component @Endpoint(id = "dg") @Service
+    public static class dgsi extends $$$<dg, dgp> implements dgs {
+        public dgsi(dgp a) { super(a); }
+
+        @SuppressWarnings("unused") @ReadOperation
+        public String a() { return gt(); }
+    }
 
     ////////////////////////////////////////////////////////////////////// repository
 
