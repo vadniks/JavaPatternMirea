@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -46,6 +45,8 @@ sudo su - postgres
     pg_ctl -D /var/lib/postgres/data stop
 
 management.endpoints.web.exposure.include=usr,dg
+
+org.springframework.boot:spring-boot-starter-aop
 */
 @SpringBootApplication
 public class tsk20 {
