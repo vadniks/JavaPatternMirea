@@ -104,9 +104,8 @@ public class tsk20 {
 
     ////////////////////////////////////////////////////////////////////// service
 
-    private interface $$<T extends _$, R extends $$$$<T>>
-    { List<T> gal(); void dd(T a); void dl(int a);
-        void nw(); String gt(); }
+    @SuppressWarnings("unused") private interface $$<T extends _$, R extends $$$$<T>>
+    { List<T> gal(); void dd(T a); void dl(int a); void nw(); String gt(); }
 
     public interface uss extends $$<usr, usp> {}
     public interface dgs extends $$<dg, dgp> {}
@@ -131,8 +130,8 @@ public class tsk20 {
 
     // GET curl http://localhost:8080/actuator/usr
     @Component @Endpoint(id = "usr") @Service
-    public static class ussi extends tsk20.asv<tsk20.usr, tsk20.usp> implements tsk20.uss {
-        public ussi(tsk20.usp a) { super(a); }
+    public static class ussi extends asv<usr, usp> implements uss {
+        public ussi(usp a) { super(a); }
 
         @SuppressWarnings("unused") @ReadOperation @TestOnly
         public String a() { return gt(); }
@@ -143,7 +142,7 @@ public class tsk20 {
     public static class dgsi extends asv<dg, dgp> implements dgs {
         public dgsi(dgp a) { super(a); }
 
-        @SuppressWarnings("unused") @ReadOperation
+        @SuppressWarnings("unused") @ReadOperation @TestOnly
         public String a() { return gt(); }
     }
 
