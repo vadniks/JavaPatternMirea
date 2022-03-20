@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="ISO-8859-1">
+        <title>List users</title>
+    </head>
+    <body>
+        <form th:action="@{/lgo}" method="post">
+            <p>Welcome <b>[[${#request.userPrincipal.principal.username}]]</b></p>
+            <input type="submit" value="Log out"/>
+        </form>
+        <h1>List of Users</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>User id</th>
+                    <th>Email</th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="usr: ${lst}">
+                    <td th:text="${usr.em}">Email</td>
+                    <td th:text="${usr.fn}">First name</td>
+                    <td th:text="${usr.ln}">Last name</td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>
