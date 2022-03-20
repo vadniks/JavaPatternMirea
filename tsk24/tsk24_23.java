@@ -1,5 +1,20 @@
 package b;
 
+import a.tsk23;
+import lombok.val;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.Objects;
+
+import static a.tsk23.usr;
+import static a.tsk23.ussi;
+import static a.tsk23.dgsi;
+
 @SpringBootTest(classes = tsk23.class)
 public class tsk24_23 {
     @Autowired private ussi u;
