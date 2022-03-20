@@ -246,9 +246,10 @@ sudo su - postgres
     @MappedSuperclass
     public static abstract class _$ implements Serializable
     { @GeneratedValue(strategy = GenerationType.IDENTITY)
-      @Nullable @Id Integer id; }
+      @Nullable @Id public Integer id;
+      public _$ st(int a) {id = a; return this; } }
 
-    @Table(name = tb1) @Entity
+    @Table(name = tb1) @Entity @Builder @AllArgsConstructor
     @RequiredArgsConstructor @Getter @Setter
     public static class usr extends _$ {
         @NonNull public String fn;
@@ -259,7 +260,7 @@ sudo su - postgres
         @OneToMany(
             mappedBy = "rs",
             fetch = FetchType.EAGER)
-        List<dg> dgs = new ArrayList<>();
+        @Builder.Default List<dg> dgs = new ArrayList<>();
 
         public usr() { fn = ""; ln = ""; ps = ""; em = ""; }
 
@@ -275,11 +276,11 @@ sudo su - postgres
     @Table(name = tb2) @Entity @ToString
     @Deprecated @RequiredArgsConstructor
     public static class dg extends _$ {
-        @NonNull String nm;
-        @NonNull String bd;
+        @NonNull public String nm;
+        @NonNull public String bd;
 
         @ManyToOne
-        @Nullable usr rs;
+        @Nullable public usr rs;
 
         public dg() {}
     }
