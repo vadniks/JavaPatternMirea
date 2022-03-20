@@ -29,6 +29,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
+import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -37,14 +39,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.persistence.*;
 import javax.sql.DataSource;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -60,8 +59,6 @@ sudo su - postgres
         select * from urs;
         select * from dgs;
     pg_ctl -D /var/lib/postgres/data stop
-
-management.endpoints.web.exposure.include=usr,dg
 */
 @SpringBootApplication public class tsk23 {
     private static final String db = "db";
@@ -72,9 +69,12 @@ management.endpoints.web.exposure.include=usr,dg
     @SneakyThrows public static void main(String[] args) {
         val a = new SpringApplication(tsk23.class);
 
-        val b = new HashMap<String, Object>();
-        b.put("management.endpoints.web.exposure.include", "*");
-        b.put("spring.main.allow-bean-definition-overriding", "true");
+        val b = new Properties();
+        b.setProperty("spring.session.store-type", "jdbc");
+        b.setProperty("spring.session.jdbc.initialize-schema", "always");
+        b.setProperty("spring.session.jdbc.schema",
+            "classpath:org/springframework/session/jdbc/schema-postgresql.sql");
+        b.setProperty("spring.session.timeout.seconds", "1000");
 
         a.setDefaultProperties(b);
         a.run(args);
@@ -83,7 +83,8 @@ management.endpoints.web.exposure.include=usr,dg
     ////////////////////////////////////////////////////////////////////// configuration
 
     @EnableJpaRepositories(considerNestedRepositories = true)
-    @Configuration public static class A {
+    @EnableJdbcHttpSession @Configuration public static class A
+    extends AbstractHttpSessionApplicationInitializer {
 
         @Bean public DataSource ds() {
             val a = new HikariConfig();
@@ -116,8 +117,8 @@ management.endpoints.web.exposure.include=usr,dg
                 requireNonNull(a.getObject())); }
     }
 
-    @EnableWebSecurity @Configuration
-    public static class B extends WebSecurityConfigurerAdapter {
+    @EnableWebSecurity @Configuration public static class B
+    extends WebSecurityConfigurerAdapter {
 
         @Override protected void
         configure(AuthenticationManagerBuilder a)
@@ -129,6 +130,7 @@ management.endpoints.web.exposure.include=usr,dg
         @Override protected void configure(HttpSecurity a) throws Exception { a
             .csrf().disable().cors().disable()
             .authorizeRequests().antMatchers("/lg", "/", "rg").permitAll()
+            .antMatchers("/actuator", "/actuator/**").denyAll()
             .antMatchers("/ls").authenticated()
             .and().formLogin().usernameParameter("em").passwordParameter("ps")
                 .loginPage("/lg").failureUrl("/lg?er=true").permitAll()
@@ -158,34 +160,28 @@ management.endpoints.web.exposure.include=usr,dg
 
         @GetMapping("") public String nx() { return "index"; }
 
-        @GetMapping("/rg") public String rg(Model a) {
-            a.addAttribute(us, new usr());
-            return rg;
-        }
+        @GetMapping("/rg") public String rg(Model a)
+        { a.addAttribute(us, new usr());
+          return rg; }
 
         @PostMapping("/rrg") public String rgg(usr a, Model b) {
-            val d = new ModelAndView();
             val e = rp.ctn(a.em);
 
-            if (!e) {
-                a.ps = new BCryptPasswordEncoder().encode(a.ps);
-                rp.dd(a);
-            }
+            if (!e) { a.ps = new BCryptPasswordEncoder().encode(a.ps);
+                      rp.dd(a); }
 
-            val f = !e ? "successfull" : "failed";
+            val f = !e ? "successful" : "failed";
             b.addAttribute("rs", new rs(f, f));
             return rs;
         }
 
-        @GetMapping("/lg") public String lg(Model a) {
-            a.addAttribute("lg", new lg(null, null));
-            return lg;
-        }
+        @GetMapping("/lg") public String lg(Model a)
+        { a.addAttribute("lg", new lg(null, null));
+          return lg; }
 
-        @GetMapping("/ls") public String ls(WebRequest a, Model b) {
-            b.addAttribute("lst", rp.gal());
-            return ls;
-        }
+        @GetMapping("/ls") public String ls(Model b)
+        { b.addAttribute("lst", rp.gal());
+          return ls; }
     }
 
     ////////////////////////////////////////////////////////////////////// service
@@ -194,7 +190,7 @@ management.endpoints.web.exposure.include=usr,dg
     { List<T> gal(); void dd(T a); void dl(int a); T nw(T a); String gt(); }
 
     public interface uss extends $$<usr, usp> {}
-    public interface dgs extends $$<dg, dgp> {}
+    @Deprecated public interface dgs extends $$<dg, dgp> {}
 
     @RequiredArgsConstructor public abstract static class
     asv<T extends _$, R extends $$$$<T>> implements $$<T, R> {
@@ -215,7 +211,6 @@ management.endpoints.web.exposure.include=usr,dg
         @Autowired public ussi(usp a) { super(a); }
 
         public boolean ctn(String a) { return rp.ibe(a) != null; }
-        @Nullable public usr ibe(String a) { return rp.ibe(a); }
 
         @Override public UserDetails loadUserByUsername(String a)
         throws UsernameNotFoundException {
@@ -223,12 +218,10 @@ management.endpoints.web.exposure.include=usr,dg
             if (b == null) throw new UsernameNotFoundException(null);
 
             return User.withUsername(a).password(b.ps).authorities(rl).build();
-//            return new User(b.em, b.ps,
-//                Collections.singleton(new SimpleGrantedAuthority(rl)));
         }
     }
 
-    @Service public static class dgsi
+    @Deprecated @Service public static class dgsi
     extends asv<dg, dgp> implements dgs
     { public dgsi(dgp a) { super(a); } }
 
@@ -243,7 +236,7 @@ management.endpoints.web.exposure.include=usr,dg
         @Nullable usr ibe(String a);
     }
 
-    @Repository public interface dgp extends $$$$<dg> {}
+    @Deprecated @Repository public interface dgp extends $$$$<dg> {}
 
     ////////////////////////////////////////////////////////////////////// data
 
@@ -280,7 +273,7 @@ management.endpoints.web.exposure.include=usr,dg
     }
 
     @Table(name = tb2) @Entity @ToString
-    @RequiredArgsConstructor
+    @Deprecated @RequiredArgsConstructor
     public static class dg extends _$ {
         @NonNull String nm;
         @NonNull String bd;
